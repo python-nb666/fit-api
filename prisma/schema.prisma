@@ -8,10 +8,48 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        Int             @id @default(autoincrement())
   username  String
   password  String
-  createdAt DateTime @default(now()) @map("created_at")
+  createdAt DateTime        @default(now()) @map("created_at")
+  records   WorkoutRecord[]
 
   @@map("users")
+}
+
+model Category {
+  id        Int        @id @default(autoincrement())
+  slug      String     @unique // e.g. "chest"
+  name      String // e.g. "胸部"
+  exercises Exercise[]
+
+  @@map("categories")
+}
+
+model Exercise {
+  id         Int             @id @default(autoincrement())
+  name       String // e.g. "杠铃卧推"
+  categoryId Int
+  category   Category        @relation(fields: [categoryId], references: [id])
+  records    WorkoutRecord[]
+
+  @@map("exercises")
+}
+
+model WorkoutRecord {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  exerciseId Int
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+
+  reps       Int
+  weight     Float
+  weightUnit String @default("kg")
+  sets       Int    @default(1)
+
+  workoutTime DateTime // 对应 date + time
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("workout_records")
 }
