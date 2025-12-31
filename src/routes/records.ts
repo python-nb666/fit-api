@@ -3,6 +3,8 @@ import {
   createRecord,
   getRecords,
   syncRecords,
+  updateRecord,
+  deleteRecord,
 } from "../controllers/recordsController";
 
 const router = Router();
@@ -150,5 +152,63 @@ router.post("/", createRecord);
  *         description: Server error
  */
 router.get("/", getRecords);
+
+/**
+ * @swagger
+ * /api/records/{id}:
+ *   put:
+ *     summary: Update a workout record
+ *     tags: [Records]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               reps:
+ *                 type: integer
+ *               weight:
+ *                 type: number
+ *               weightUnit:
+ *                 type: string
+ *               sets:
+ *                 type: integer
+ *               date:
+ *                 type: string
+ *               time:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Updated record
+ *       500:
+ *         description: Server error
+ */
+router.put("/:id", updateRecord);
+
+/**
+ * @swagger
+ * /api/records/{id}:
+ *   delete:
+ *     summary: Delete a workout record
+ *     tags: [Records]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Success message
+ *       500:
+ *         description: Server error
+ */
+router.delete("/:id", deleteRecord);
 
 export default router;

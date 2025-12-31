@@ -91,3 +91,45 @@ export const syncRecords = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to sync records" });
   }
 };
+
+export const updateRecord = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { reps, weight, weightUnit, sets, date, time } = req.body;
+
+    const updateData: any = {};
+    if (reps !== undefined) updateData.reps = Number(reps);
+    if (weight !== undefined) updateData.weight = Number(weight);
+    if (weightUnit !== undefined) updateData.weightUnit = weightUnit;
+    if (sets !== undefined) updateData.sets = Number(sets);
+
+    if (date && time) {
+      updateData.workoutTime = new Date(`${date}T${time}`);
+    }
+
+    const record = await prisma.workoutRecord.update({
+      where: { id: Number(id) },
+      data: updateData,
+    });
+
+    res.json(record);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to update workout record" });
+  }
+};
+
+export const deleteRecord = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    await prisma.workoutRecord.delete({
+      where: { id: Number(id) },
+    });
+
+    res.json({ message: "Record deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to delete workout record" });
+  }
+};
