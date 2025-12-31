@@ -1,5 +1,5 @@
 import { Router } from "express";
-import prisma from "../prisma";
+import { getCategories } from "../controllers/exercisesController";
 
 const router = Router();
 
@@ -21,18 +21,6 @@ const router = Router();
  *       500:
  *         description: Server error
  */
-router.get("/categories", async (req, res) => {
-  try {
-    const categories = await prisma.category.findMany({
-      include: {
-        exercises: true,
-      },
-    });
-    res.json(categories);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to fetch categories" });
-  }
-});
+router.get("/categories", getCategories);
 
 export default router;
