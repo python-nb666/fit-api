@@ -55,3 +55,39 @@ export const getRecords = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to fetch workout records" });
   }
 };
+
+export const syncRecords = async (req: Request, res: Response) => {
+  try {
+    const { records } = req.body;
+
+    if (!Array.isArray(records)) {
+      return res.status(400).json({ error: "Records must be an array" });
+    }
+
+    const recordsData = records.map((record: any) => {
+      const { userId, exerciseId, reps, weight, weightUnit, sets, date, time } =
+        record;
+      // 组合日期和时间
+      const workoutTime = new Date(`${date}T${time}`);
+
+      return {
+        userId: Number(userId),
+        exerciseId: Number(exerciseId),
+        reps: Number(reps),
+        weight: Number(weight),
+        weightUnit: weightUnit || "kg",
+        sets: Number(sets),
+        workoutTime,
+      };
+    });
+
+    const result = await prisma.workoutRecord.createMany({
+      data: recordsData,
+    });
+
+    res.json({ message: "Successfully synced records", count: result.count });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to sync records" });
+  }
+};
